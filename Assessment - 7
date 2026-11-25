@@ -1,0 +1,74 @@
+#include <stdio.h>
+
+struct Device {
+    int id;
+    char type[20];
+    float vf;
+    float ir;
+    float vr;
+    float max_vf;
+    float max_ir;
+    float max_vr;
+};
+
+int main() {
+    int n, i, oos_count = 0;
+
+    printf("How many semiconductor devices do you want to test? ");
+    scanf("%d", &n);
+
+    struct Device d[n];
+
+    for (i = 0; i < n; i++) {
+        printf("\nEnter details for Device %d:\n", i + 1);
+        
+        printf("Device ID: ");
+        scanf("%d", &d[i].id);
+        
+        printf("Device Type (Diode/BJT/MOSFET/LED): ");
+        scanf("%s", d[i].type);
+        
+        printf("Measured Forward Voltage Vf (V): ");
+        scanf("%f", &d[i].vf);
+        
+        printf("Measured Leakage Current Ir (uA): ");
+        scanf("%f", &d[i].ir);
+        
+        printf("Measured Voltage Vr (V): ");
+        scanf("%f", &d[i].vr);
+
+        printf("Permissible Max Vf (V): ");
+        scanf("%f", &d[i].max_vf);
+        
+        printf("Permissible Max Ir (uA): ");
+        scanf("%f", &d[i].max_ir);
+        
+        printf("Rated Voltage Limit Vr (V): ");
+        scanf("%f", &d[i].max_vr);
+    }
+
+    printf("\n--- TEST RESULTS ---\n");
+
+    for (i = 0; i < n; i++) {
+        if (d[i].vf > d[i].max_vf || d[i].ir > d[i].max_ir || d[i].vr > d[i].max_vr) {
+            printf("Device ID %d (%s) -> OUT OF SPECIFICATION\n", d[i].id, d[i].type);
+            
+            if (d[i].vf > d[i].max_vf) {
+                printf("  * Vf is too high (%.2f V > %.2f V)\n", d[i].vf, d[i].max_vf);
+            }
+            if (d[i].ir > d[i].max_ir) {
+                printf("  * Ir is too high (%.2f uA > %.2f uA)\n", d[i].ir, d[i].max_ir);
+            }
+            if (d[i].vr > d[i].max_vr) {
+                printf("  * Vr exceeds rated voltage (%.2f V > %.2f V)\n", d[i].vr, d[i].max_vr);
+            }
+            oos_count++;
+        } else {
+            printf("Device ID %d (%s) -> OK (Within Limits)\n", d[i].id, d[i].type);
+        }
+    }
+
+    printf("\nSummary: %d out of %d devices failed the test.\n", oos_count, n);
+
+    return 0;
+}

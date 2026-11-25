@@ -1,0 +1,237 @@
+#include <stdio.h>
+#include <string.h>
+
+int main()
+{
+    char str1[200], str2[200], temp[200];
+    char ch, *ptr;
+    int choice, n, result;
+
+    do
+    {
+        printf("\n===== STRING OPERATIONS MENU =====\n");
+        printf("1. Find length of a string\n");
+        printf("2. Copy one string to another\n");
+        printf("3. Join two strings\n");
+        printf("4. Copy specific number of characters\n");
+        printf("5. Join specific number of characters\n");
+        printf("6. Compare two strings\n");
+        printf("7. Compare specific characters\n");
+        printf("8. Find first occurrence of a character\n");
+        printf("9. Find last occurrence of a character\n");
+        printf("10. Find a substring\n");
+        printf("11. Divide string into tokens\n");
+        printf("12. Exit\n");
+
+        printf("\nEnter your choice: ");
+        scanf("%d", &choice);
+        getchar();
+
+        switch(choice)
+        {
+            case 1:
+                printf("Enter a string: ");
+                fgets(str1, sizeof(str1), stdin);
+                str1[strcspn(str1, "\n")] = '\0';
+
+                printf("Length = %lu\n", (unsigned long)strlen(str1));
+                break;
+
+            case 2:
+                printf("Enter a string: ");
+                fgets(str1, sizeof(str1), stdin);
+                str1[strcspn(str1, "\n")] = '\0';
+
+                strcpy(str2, str1);
+                printf("Copied string = %s\n", str2);
+                break;
+
+            case 3:
+                printf("Enter first string: ");
+                fgets(str1, sizeof(str1), stdin);
+                str1[strcspn(str1, "\n")] = '\0';
+
+                printf("Enter second string: ");
+                fgets(str2, sizeof(str2), stdin);
+                str2[strcspn(str2, "\n")] = '\0';
+
+                strcat(str1, str2);
+                printf("Joined string = %s\n", str1);
+                break;
+
+            case 4:
+                printf("Enter a string: ");
+                fgets(str1, sizeof(str1), stdin);
+                str1[strcspn(str1, "\n")] = '\0';
+
+                printf("Enter number of characters: ");
+                scanf("%d", &n);
+                getchar();
+
+                if(n < 0)
+                {
+                    printf("Invalid number!\n");
+                    break;
+                }
+
+                strncpy(str2, str1, n);
+                str2[n < 199 ? n : 199] = '\0';
+
+                printf("Copied string = %s\n", str2);
+                break;
+
+            case 5:
+                printf("Enter first string: ");
+                fgets(str1, sizeof(str1), stdin);
+                str1[strcspn(str1, "\n")] = '\0';
+
+                printf("Enter second string: ");
+                fgets(str2, sizeof(str2), stdin);
+                str2[strcspn(str2, "\n")] = '\0';
+
+                printf("Enter number of characters: ");
+                scanf("%d", &n);
+                getchar();
+
+                if(n < 0)
+                {
+                    printf("Invalid number!\n");
+                    break;
+                }
+
+                strncat(str1, str2, n);
+                printf("Joined string = %s\n", str1);
+                break;
+
+            case 6:
+                printf("Enter first string: ");
+                fgets(str1, sizeof(str1), stdin);
+                str1[strcspn(str1, "\n")] = '\0';
+
+                printf("Enter second string: ");
+                fgets(str2, sizeof(str2), stdin);
+                str2[strcspn(str2, "\n")] = '\0';
+
+                result = strcmp(str1, str2);
+
+                if(result == 0)
+                    printf("Both strings are equal.\n");
+                else
+                    printf("Strings are not equal.\n");
+                break;
+
+            case 7:
+                printf("Enter first string: ");
+                fgets(str1, sizeof(str1), stdin);
+                str1[strcspn(str1, "\n")] = '\0';
+
+                printf("Enter second string: ");
+                fgets(str2, sizeof(str2), stdin);
+                str2[strcspn(str2, "\n")] = '\0';
+
+                printf("Enter number of characters: ");
+                scanf("%d", &n);
+                getchar();
+
+                if(n < 0)
+                {
+                    printf("Invalid number!\n");
+                    break;
+                }
+
+                result = strncmp(str1, str2, n);
+
+                if(result == 0)
+                    printf("Specified characters are equal.\n");
+                else
+                    printf("Specified characters are not equal.\n");
+                break;
+
+            case 8:
+                printf("Enter a string: ");
+                fgets(str1, sizeof(str1), stdin);
+                str1[strcspn(str1, "\n")] = '\0';
+
+                printf("Enter character to search: ");
+                scanf("%c", &ch);
+                getchar();
+
+                ptr = strchr(str1, ch);
+
+                if(ptr != NULL)
+                    printf("First occurrence found at position %ld\n",
+                           (long)(ptr - str1 + 1));
+                else
+                    printf("Character not found.\n");
+                break;
+
+            case 9:
+                printf("Enter a string: ");
+                fgets(str1, sizeof(str1), stdin);
+                str1[strcspn(str1, "\n")] = '\0';
+
+                printf("Enter character to search: ");
+                scanf("%c", &ch);
+                getchar();
+
+                ptr = strrchr(str1, ch);
+
+                if(ptr != NULL)
+                    printf("Last occurrence found at position %ld\n",
+                           (long)(ptr - str1 + 1));
+                else
+                    printf("Character not found.\n");
+                break;
+
+            case 10:
+                printf("Enter a string: ");
+                fgets(str1, sizeof(str1), stdin);
+                str1[strcspn(str1, "\n")] = '\0';
+
+                printf("Enter substring to search: ");
+                fgets(str2, sizeof(str2), stdin);
+                str2[strcspn(str2, "\n")] = '\0';
+
+                ptr = strstr(str1, str2);
+
+                if(ptr != NULL)
+                    printf("Substring found at position %ld\n",
+                           (long)(ptr - str1 + 1));
+                else
+                    printf("Substring not found.\n");
+                break;
+
+            case 11:
+                printf("Enter a string: ");
+                fgets(str1, sizeof(str1), stdin);
+                str1[strcspn(str1, "\n")] = '\0';
+
+                printf("Enter delimiter: ");
+                fgets(str2, sizeof(str2), stdin);
+                str2[strcspn(str2, "\n")] = '\0';
+
+                strcpy(temp, str1);
+
+                ptr = strtok(temp, str2);
+
+                printf("Tokens are:\n");
+
+                while(ptr != NULL)
+                {
+                    printf("%s\n", ptr);
+                    ptr = strtok(NULL, str2);
+                }
+                break;
+
+            case 12:
+                printf("Exiting the program.\n");
+                break;
+
+            default:
+                printf("Invalid choice! Please try again.\n");
+        }
+
+    } while(choice != 12);
+
+    return 0;
+}

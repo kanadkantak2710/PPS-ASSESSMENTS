@@ -1,0 +1,159 @@
+#include <stdio.h>
+#include <string.h>
+
+#define LOG_FILE "underwater_log.txt"
+#define REPORT_FILE "underwater_report.txt"
+
+#define MAX_DEPTH 300.0
+#define MAX_PRESSURE 30.0
+#define MAX_TEMP 35.0
+#define MIN_BATTERY 20.0
+
+struct RobotRecord {
+    float depth;        // in meters
+    float pressure;     // in MPa
+    float temperature;  // in degree C
+    float battery;      // in percent
+    char defect[30];    // "None" if no defect
+};
+
+void addRecord() {
+    struct RobotRecord r;
+    FILE *fp = fopen(LOG_FILE, "a");
+
+    if (fp == NULL) {
+        printf("Error: could not open log file!\n");
+        return;
+    }
+
+    printf("\nEnter robot data\n");
+    printf("Depth (m): ");
+    scanf("%f", &r.depth);
+    printf("Pressure (MPa): ");
+    scanf("%f", &r.pressure);
+    printf("Temperature (C): ");
+    scanf("%f", &r.temperature);
+    printf("Battery (%%): ");
+    scanf("%f", &r.battery);
+    printf("Defect (type None if no defect, no spaces): ");
+    scanf("%s", r.defect);
+
+    fprintf(fp, "%.2f %.2f %.2f %.2f %s\n", r.depth, r.pressure,
+            r.temperature, r.battery, r.defect);
+    fclose(fp);
+
+    printf("Record saved.\n");
+}
+
+void generateReport() {
+    struct RobotRecord r;
+    FILE *fp = fopen(LOG_FILE, "r");
+    FILE *rep = fopen(REPORT_FILE, "w");
+
+    int total = 0, unsafe = 0;
+    int crack = 0, corrosion = 0, leak = 0, otherDefect = 0;
+
+    if (fp == NULL) {
+        printf("No records found. Add some data first.\n");
+        if (rep != NULL) fclose(rep);
+        return;
+    }
+    if (rep == NULL) {
+        printf("Error: could not create report file!\n");
+        fclose(fp);
+        return;
+    }
+
+    fprintf(rep, "===== UNDERWATER ROBOT INSPECTION REPORT =====\n\n");
+
+    while (fscanf(fp, "%f %f %f %f %s", &r.depth, &r.pressure,
+                  &r.temperature, &r.battery, r.defect) == 5) {
+        int isUnsafe = 0;
+        total++;
+
+        fprintf(rep, "Record %d: Depth=%.1f m, Pressure=%.1f MPa, Temp=%.1f C, Battery=%.1f%%, Defect=%s\n",
+                total, r.depth, r.pressure, r.temperature, r.battery, r.defect);
+
+        // check each parameter
+        if (r.depth > MAX_DEPTH) {
+            fprintf(rep, "   -> Depth too high\n");
+            isUnsafe = 1;
+        }
+        if (r.pressure > MAX_PRESSURE) {
+            fprintf(rep, "   -> Pressure too high\n");
+            isUnsafe = 1;
+        }
+        if (r.temperature > MAX_TEMP) {
+            fprintf(rep, "   -> Temperature too high\n");
+            isUnsafe = 1;
+        }
+        if (r.battery < MIN_BATTERY) {
+            fprintf(rep, "   -> Battery too low\n");
+            isUnsafe = 1;
+        }
+        if (strcmp(r.defect, "None") != 0) {
+            fprintf(rep, "   -> Defect detected: %s\n", r.defect);
+            isUnsafe = 1;
+
+            if (strcmp(r.defect, "Crack") == 0)
+                crack++;
+            else if (strcmp(r.defect, "Corrosion") == 0)
+                corrosion++;
+            else if (strcmp(r.defect, "Leak") == 0)
+                leak++;
+            else
+                otherDefect++;
+        }
+
+        if (isUnsafe) {
+            fprintf(rep, "   STATUS: UNSAFE\n\n");
+            unsafe++;
+        } else {
+            fprintf(rep, "   STATUS: SAFE\n\n");
+        }
+    }
+
+    fprintf(rep, "----------- SUMMARY -----------\n");
+    fprintf(rep, "Total records : %d\n", total);
+    fprintf(rep, "Safe records  : %d\n", total - unsafe);
+    fprintf(rep, "Unsafe records: %d\n", unsafe);
+    fprintf(rep, "Cracks        : %d\n", crack);
+    fprintf(rep, "Corrosion     : %d\n", corrosion);
+    fprintf(rep, "Leaks         : %d\n", leak);
+    fprintf(rep, "Other defects : %d\n", otherDefect);
+
+    fclose(fp);
+    fclose(rep);
+
+    printf("\nReport generated in %s\n", REPORT_FILE);
+    printf("Total: %d, Unsafe: %d\n", total, unsafe);
+}
+
+int main() {
+    int choice;
+
+    do {
+        printf("\n--- Underwater Robot Monitoring ---\n");
+        printf("1. Add new robot data\n");
+        printf("2. Generate inspection report\n");
+        printf("3. Exit\n");
+        printf("Enter choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                addRecord();
+                break;
+            case 2:
+                generateReport();
+                break;
+            case 3:
+                printf("Exiting program...\n");
+                break;
+            default:
+                printf("Invalid choice, try again.\n");
+        }
+    } while (choice != 3);
+
+    return 0;
+}
